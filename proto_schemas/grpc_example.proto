@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package grpc_example;
+
+service User {
+  rpc Create (CreateRequest) returns (UserReply) {}
+  rpc Get (GetRequest) returns (UserReply) {}
+}
+
+message UserReply {
+  int32 id = 1;
+  string email = 2;
+  string name = 3;
+}
+
+message CreateRequest {
+  string email = 1;
+  string name = 2;
+}
+
+message GetRequest {
+  int32 id = 1;
+}
