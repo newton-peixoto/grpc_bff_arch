@@ -1,4 +1,4 @@
-defmodule App.GrpcExample.UserReply do
+defmodule GrpcExample.UserReply do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -8,7 +8,7 @@ defmodule App.GrpcExample.UserReply do
   field :name, 3, type: :string
 end
 
-defmodule App.GrpcExample.CreateRequest do
+defmodule GrpcExample.CreateRequest do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -17,7 +17,7 @@ defmodule App.GrpcExample.CreateRequest do
   field :name, 2, type: :string
 end
 
-defmodule App.GrpcExample.GetRequest do
+defmodule GrpcExample.GetRequest do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -25,18 +25,18 @@ defmodule App.GrpcExample.GetRequest do
   field :id, 1, type: :int32
 end
 
-defmodule App.GrpcExample.User.Service do
+defmodule GrpcExample.User.Service do
   @moduledoc false
 
   use GRPC.Service, name: "grpc_example.User", protoc_gen_elixir_version: "0.12.0"
 
-  rpc :Create, App.GrpcExample.CreateRequest, App.GrpcExample.UserReply
+  rpc :Create, GrpcExample.CreateRequest, GrpcExample.UserReply
 
-  rpc :Get, App.GrpcExample.GetRequest, App.GrpcExample.UserReply
+  rpc :Get, GrpcExample.GetRequest, GrpcExample.UserReply
 end
 
-defmodule App.GrpcExample.User.Stub do
+defmodule GrpcExample.User.Stub do
   @moduledoc false
 
-  use GRPC.Stub, service: App.GrpcExample.User.Service
+  use GRPC.Stub, service: GrpcExample.User.Service
 end

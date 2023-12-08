@@ -23,6 +23,7 @@ defmodule App.MixProject do
   defp deps do
     [
       {:grpc, "~> 0.5.0-beta"},
+      {:protobuf, "~> 0.10.0"},
       {:cowlib, "~> 2.8.0", hex: :grpc_cowlib, override: true}
     ]
   end
