@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package grpc_example;
 
+option go_package = "../grpc_user_service";
+
 service User {
   rpc Create (CreateRequest) returns (UserReply) {}
   rpc Get (GetRequest) returns (UserReply) {}

@@ -1,9 +1,9 @@
-defmodule App.MixProject do
+defmodule ElixirGrpcSchemas.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :grpc_server,
+      app: :elixir_grpc_schemas,
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
@@ -14,15 +14,16 @@ defmodule App.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      mod: {App.Application, []}
+      extra_applications: [:logger]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:elixir_grpc_schemas, path: "../proto_schemas/elixir_grpc_schemas/"}
+      {:grpc, "~> 0.5.0-beta"},
+      {:protobuf, "~> 0.10.0"},
+      {:cowlib, "~> 2.8.0", hex: :grpc_cowlib, override: true},
     ]
   end
 end
