@@ -1,18 +1,18 @@
-# Integrando um BFF Rest com um microsserviço via gRPC
-
 ## Informações iniciais
-Nesse texto iremos entender um pouco sobre gRPC e como integrar ele em uma arquitetura que utiliza BFFs (Backend For Frontend).
-O texto será mais profeitoso se o leitor acompanhar juntamente ao repositório no Github para que possa abrir e entender as pastas do projeto. 
 
-## O que é um BFF?
-Backend For Frontend (BFF) refere-se a uma camada responsável por intermediar as requisições entre o cliente e o servidor agragando informações de diferentes serviços, tratando os dados e permitindo que possamos atender necessidades específicas de cada cliente.
+Neste texto, abordaremos o `gRPC` e como integrá-lo em uma arquitetura que utiliza `BFFs (Backend For Frontend)`. A compreensão será mais proveitosa se o leitor acompanhar o repositório no `Github` para explorar as pastas do projeto.
 
-## gRPC
-Framework desenvolvido pela Google para facilitar comunicações entre serviços utilizando um protocolo de contrato bem defnido, Protocol Buffers (protobuf).
+## O que é um _BFF_?
+
+`Backend For Frontend (BFF)` refere-se a uma camada responsável por intermediar as requisições entre o cliente e o servidor, agregando informações de diferentes serviços, tratando os dados e permitindo atender necessidades específicas de cada cliente.
+
+## _gRPC_
+
+O `gRPC` é um `framework` desenvolvido pela `Google` para facilitar comunicações entre serviços, utilizando um protocolo de contrato bem definido, `Protocol Buffers` (`protobuf`).
 
 ## Definição de contrato
 
-A primeira etapa para começarmos a utilizar gRPC é instalarmos em nossa máquina o protoc e definirmos nosso serviço. Nosso serviço é definido da seguinte forma: 
+A primeira etapa para começarmos a utilizar `gRPC` é instalar o protoc na máquina e definir nosso serviço. Nosso serviço é definido da seguinte forma:
 
 ```protobuf
 syntax = "proto3";
@@ -42,24 +42,23 @@ message GetRequest {
 }
 ```
 
-Onde: 
-* `User` é noss serviço composto por duas funções Create e Get
-* UserReply é nosso contrato de resposta, o que nosso serviço irá retornar após executar a função
-* CreateRequest e GetRequest são os payloads que esperamos em cada função
+Onde:
 
+* `User` é nosso serviço composto por duas funções: `Create` e `Get`
+* `UserReply` é nosso contrato de resposta, o que nosso serviço retorna após executar a função
+* `CreateRequest` e `GetRequest` são os payloads esperados em cada função
 
-Com contrato definido podemos executar os comandos 
+Com o contrato definido, executamos os comandos:
 
-* make generate-elixir-proto 
-* make generate-go-proto 
+* make generate-elixir-proto
+* make generate-go-proto
+  
+Esses comandos criarão as estruturas de cada linguagem. Cada linguagem necessitará de seus respectivos plugins para o protoc criar os arquivos. Os _plugins_ podem ser encontrados em [Protobuf.dev.](https://protobuf.dev/reference/)
 
-Esses comandos serão responsáveis por criar as estruturas de cada linguagem. Cada linguagem necessitará de seus respectiveis plugins para o protoc ser capaz de criar os arquivos. Os plugins podem ser encontratos em [Protobuf.dev](https://protobuf.dev/reference/).
+## Criando o servidor _gRPC_
+Com o contrato criado e os módulos e estruturas gerados, podemos desenvolver nossa aplicação. A pasta `grpc_server` contém nosso código `Elixir` com um servidor `gRPC` implementado. Começamos importando os módulos gerados na etapa anterior, como pode ser visto no arquivo `grpc_server/mix.exs`. Após isso, desenvolvemos nosso endpoint.
 
-## Criando o servidor gRPC
-
-Com nosso contrato criado, módulos e estruturas gerados, podemos começar a desenvolver nossa aplicação. Temos a pasta grpc_server que contém nosso código elixir com um servidor grpc implementado. Começamos importando os módulos que geramos na etapa anterior como pode ser visto no arquivo grpc_server/mix.exs após isso desenvolvemos nosso endpoint.
-
-```elixir 
+```elixir
 defmodule App.Endpoint do
   use GRPC.Endpoint
 
@@ -67,8 +66,7 @@ defmodule App.Endpoint do
   run App.GrpcServer
 end
 ```
-
-e nele dizemos que nosso handler será o módulo customizado App.GrpcServer. 
+Neste código, especificamos que nosso handler será o módulo customizado `App.GrpcServer`.
 
 ```elixir
 defmodule App.GrpcServer do
@@ -97,11 +95,11 @@ defmodule App.GrpcServer do
     end
   end
 end
+
 ```
+Esse módulo implementa as duas funções especificadas em nosso contrato e retorna os tipos definidos. Com isso, podemos executar nosso endpoint na porta 9000 e teremos uma aplicação pronta para receber requisições `gRPC`.
 
-Esse módulo implementa as duas funções especificadas em nosso contrato e retorna os tipos definidos. Com isso em mãos podemos executar nosso endpoint na porta 9000 e teremos uma aplicação pronta para receber requisisões gRPC.
-
-```elixir 
+```elixir
 defmodule App.Application do
   @moduledoc false
 alias Repository.UserRepository
@@ -119,13 +117,11 @@ alias Repository.UserRepository
     Supervisor.start_link(children, opts)
   end
 end
+
 ```
 
-## Criando BFF em go para consumir servidor gRPC
-
-Com nosso servidor gRPC em Elixir disponível nos resta agora criarmos uma API Rest que será utilizada pelo nosso frontend e consumirmos as informações do serviço que busca e cria usuários. </br></br>
-
-Para isso, criamos a pasta grpc_client, inicializamos nosso módulo com o comando go mod init, importamos nossa biblioteca com os arquivos gerados pelo protoc que estão na pasta proto_schemas. Podemos ver o import em grpc_client/go.mod. Por fim, criamos nosso arquivo grpc_client/main.go que conterá nosso servidor web dispovível pela biblioteca gin e as conexões com nosso serviço em Elixir.
+## Criando _BFF_ em _Go_ para consumir servidor _gRPC_
+Com nosso servidor `gRPC` em `Elixir` disponível, criaremos uma _API Rest_ que será utilizada pelo nosso `frontend` para consumir informações do serviço que busca e cria usuários.
 
 ```go
 package main
@@ -221,25 +217,23 @@ func insert_user(c *gin.Context) {
 		"email": r.Email,
 	})
 }
+
 ```
 
-Nossa função é reponsável por criar nossa conexão com o servidor gRPC e disponibilizar nosso servidor web com duas rotas. Essas rotas por sua vez irão executar as funções get_user e insert_user, validar o payload de entrada, enviar a requisição via gRPC para o serviço em Elixir, validar se não houve nenhum erro nesse processo e retornar JSON esperado de saída.  
+Nossa função main é responsável por criar a conexão com o servidor `gRPC` e disponibilizar um servidor `web` com duas rotas. Essas rotas executarão funções específicas, validarão o payload de entrada, enviarão a requisição via `gRPC` para o serviço em `Elixir`, verificarão se houve algum erro nesse processo e retornarão o `JSON` esperado de saída.
 
-## gRPC vs Rest
+## _gRPC_ vs _Rest_
+O `gRPC` é a melhor alternativa para comunicações entre serviços? Bem, em minha opinião, é uma excelente alternativa para comunicações entre serviços que não dependem de entrada do cliente, uma vez que o suporte para navegadores ainda é limitado. Por outro lado, em uma companhia com diversos serviços que trocam informações constantemente, o `gRPC` pode ser uma excelente alternativa para diminuir o tráfego de dados pela rede devido ao uso dos protobufs no lugar de `JSON` e/ou `XML`, que exigem maior esforço para deserializar. Além disso, oferece maior agilidade para o desenvolvimento entre as equipes, já que a geração de código ocorre de forma ágil com o auxílio do `protoc`. No entanto, a escolha entre tecnologias depende de fatores como familiaridade da equipe e disponibilidade para migração.
 
-gRPC é a melhor alternativa para comunicações entre serviços? Bem, em minha opinião é uma excelente alternativa para comunicações entre serviços que não dependem de entrada do cliente uma vez que o suporte para navegadores ainda se encontra bem limitado. Por outro lado, imaginando uma companhia com diversos serviços que trocam informações constantemente gRPC pode ser uma excelente alternativa para diminuirmos os dados trafegados pela rede devido ao uso dos protobuf no lugar de JSON e/ou XML que exigem maior trabalho para deserializar e uma maior agilidade para desenvolvimento entre as equipes uma vez que com o auxilio do protoc a geração de código ocorre de forma uma ágil facilitando o desenvolvimento. Claro que no fim das contas a resposta é depende pois fatores como familiaridade do time e disponibilidade para esse tipo de migração são  cruciais em momentos de tomada de decisão entre qual tecnologia escolher. 
+## Executando o projeto
+Após clonar o projeto em sua máquina, utilize o comando:
 
-## Executando o projeto 
+* make docker-up
+  
+Assim, poderá realizar requisições como as abaixo:
 
-Feito o clone do projeto em sua máquina utilize o comando 
-
-* make docker-up 
-
-e poderá realizar requisições como as abaixo 
-
-
-Criação de usuário 
-```curl 
+Criação de usuário:
+```
 curl --location 'localhost:8080/users' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -247,14 +241,8 @@ curl --location 'localhost:8080/users' \
     "email" : "teste@teste.com"
 }'
 ```
-
-Busca usuário por ID
-
-```curl 
+Busca de usuário por ID:
+```
 curl --location --request GET 'localhost:8080/users/1' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "LEOZIN",
-    "email" : "teste@teste.com"
-}'
+--header 'Content-Type: application/json
 ```
