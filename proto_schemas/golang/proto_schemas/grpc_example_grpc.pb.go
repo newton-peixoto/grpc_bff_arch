@@ -4,7 +4,7 @@
 // - protoc             v4.25.1
 // source: proto_schemas/grpc_example.proto
 
-package grpc_user_service
+package proto_schemas
 
 import (
 	context "context"

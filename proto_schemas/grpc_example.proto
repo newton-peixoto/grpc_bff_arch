@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package grpc_example;
 
-option go_package = "../grpc_user_service";
+option go_package = "../proto_schemas";
 
 service User {
   rpc Create (CreateRequest) returns (UserReply) {}
