@@ -5,3 +5,5 @@ generate-go-proto:
 	protoc --go_out=./proto_schemas/golang --go_opt=paths=source_relative \
 			--go-grpc_out=./proto_schemas/golang --go-grpc_opt=paths=source_relative \
 			./proto_schemas/*.proto
+docker-up:
+	docker-compose up --build

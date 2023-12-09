@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	addr            = "localhost:9000"
+	addr            = "server:9000"
 	grpc_connection *grpc.ClientConn
 )
 

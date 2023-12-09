@@ -1,0 +1,17 @@
+version: "3.3"
+
+services:
+    server:
+        build:
+            context: ./
+            dockerfile: elixir.dockerfile
+        container_name: elixir_grpc_server
+        ports:
+            - "9000:9000"
+    client:
+        build:
+            context: ./
+            dockerfile: go.dockerfile
+        container_name: go_grpc_client
+        ports:
+            - "8080:8080"
