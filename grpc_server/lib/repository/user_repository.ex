@@ -1,4 +1,5 @@
 defmodule Repository.UserRepository do
+  require Logger
   use GenServer
 
   # Client
@@ -41,7 +42,7 @@ defmodule Repository.UserRepository do
   def handle_call({:save, user}, _from, state = %{id: id, users: users}) do
     user = Map.put(user, :id, id)
     users = Map.put(users, id, user )
-
+    Logger.info("Saving data into database")
     {:reply, user, %{state | users: users, id: id + 1}}
   end
 
@@ -53,7 +54,7 @@ defmodule Repository.UserRepository do
 
   @impl true
   def handle_call({:get, id}, _from, state = %{users: users}) do
-
+    Logger.info("Retrieving data from database")
     {:reply, Map.get(users, id), state}
   end
 end
