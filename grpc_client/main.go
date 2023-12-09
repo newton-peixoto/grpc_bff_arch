@@ -53,7 +53,7 @@ func get_user(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"id":    r.Id,
 		"name":  r.Name,
 		"email": r.Email,
